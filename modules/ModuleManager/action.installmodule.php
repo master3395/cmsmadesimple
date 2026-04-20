@@ -102,15 +102,9 @@ try {
             switch( $rec['action'] ) {
             case 'i': // install
                 $res = $ops->InstallModule($name);
-                if( is_array($res) && $res[0] ) {
-                    modmgr_utils::track_module_event($name, 'install', $rec['version']);
-                }
                 break;
             case 'u': // upgrade
                 $res = $ops->UpgradeModule($name,$rec['version']);
-                if( is_array($res) && $res[0] ) {
-                    modmgr_utils::track_module_event($name, 'upgrade', $rec['version']);
-                }
                 break;
             case 'a': // activate
                 $res = $ops->ActivateModule($name);
@@ -153,7 +147,7 @@ try {
             foreach( $in as $rec ) {
                 if( isset($rec[$key]) ) $out[] = $rec[$key];
             }
-            if( count($out) ) {
+            if( is_array($out) && count($out) ) {
                 $out = array_unique($out);
                 return $out;
             }
@@ -237,6 +231,7 @@ try {
     $alldeps = array();
     $uselatest = (int) $this->GetPreference('latestdepends',1);
     $alldeps = $resolve_deps($module_name,$module_version,$uselatest);
+    if( !is_array($alldeps) ) $alldeps = array();
 
     // get information for all dependencies, and make sure that they are all there.
     if( is_array($alldeps) && count($alldeps) ) {
@@ -280,7 +275,7 @@ try {
 
     // remove items that are already installed (where installed version is greater or equal)
     // and create actions as to what we're going to do.
-    if( count($alldeps) ) {
+    if( is_array($alldeps) && count($alldeps) ) {
         $allmoduleinfo = ModuleManagerModuleInfo::get_all_module_info(FALSE);
         foreach( $alldeps as $name => &$rec ) {
             $rec['has_custom'] = FALSE;
@@ -313,7 +308,7 @@ try {
     }
 
     // here, if alldeps is empty... we have nothing to do.
-    if( !count($alldeps) ) {
+    if( !is_array($alldeps) || !count($alldeps) ) {
         $this->SetError($this->Lang('err_nothingtodo'));
         $this->RedirectToAdminTab();
     }

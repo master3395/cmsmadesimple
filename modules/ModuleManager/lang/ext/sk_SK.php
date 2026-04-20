@@ -1,0 +1,104 @@
+<?php
+$lang['abouttxt'] = 'O module';
+$lang['accessdenied'] = 'Prístup zamietnutý. Prosím skontrolujte svoje práva.';
+$lang['action_activated'] = 'Modul %s bol aktivovaný.';
+$lang['action_installed'] = 'Modul %s nainštalovaný s nasledujúcou správou: %s';
+$lang['action_upgraded'] = 'Modul %s bol aktualizovaný';
+$lang['admindescription'] = 'Nástroj pre vyhľadávanie a inštalovanie modulov cez vzdialený server.';
+$lang['advancedsearch_help'] = 'Konrektizujte hľadané slova pomocou +,- (vrátane, okrem), napríklad frázu s úvodzovkami "+červené -jablko+"nejaký text"';
+$lang['all_modules_up_to_date'] = 'Nie sú žiadne novšie moduly v repozitáry';
+$lang['availablemodules'] = 'Súčasný stav modulov dostupné v repozitári';
+$lang['available_updates'] = 'Moduly dostupné pre aktualizáciu';
+$lang['availmodules'] = 'Dostupné moduly';
+$lang['back_to_module_manager'] = '« návrat do správcu modulov';
+$lang['cantdownload'] = 'Nie je možné stiahovať';
+$lang['compatibility_disclaimer'] = 'The modules displayed here are contributed by both the CMS Developers, and independant third parties.  We make no guarantees that the modules available here are functional, tested, or compatible with your system.  You are encouraged to read the information found in the help and about links for each module before attempting the installation.';
+$lang['dependstxt'] = 'Závislosti';
+$lang['depend_activate'] = 'Modul %s potrebuje byť aktitovaný.';
+$lang['depend_install'] = 'Modul %s (verzia %s alebo nižšia) potrebuje nainštalovať.';
+$lang['depend_upgrade'] = 'Modul %s potrebuje aktualizovať na verziu %s.';
+$lang['download'] = 'Stiahnúť a nainštalovať';
+$lang['error'] = 'Chyba!';
+$lang['error_checksum'] = 'Chyba kontrolného súčtu.  Vzniká väčšinou chybným nahratím súboru do repozitára, alebo problémom pri sťahovaní na váš server.';
+$lang['error_connectnomodules'] = 'Aj keď pripojenie k repozitáru prebehlo úspešne, vypadá to tak, že repozitár  aktuálne nezobrazuje žiadne data.';
+$lang['error_downloadxml'] = 'Problém pri preberanú XML súboru: %s';
+$lang['error_internal'] = 'Interná chyba. Prosím reportuje chybu svojmu administrátorovi.';
+$lang['error_minimumrepository'] = 'Verzia repozitára nie je kompatibilná s verziuo vášho správcu modulov';
+$lang['error_moduleinstallfailed'] = 'Inštalácia modulu neúspešná';
+$lang['error_module_object'] = 'Chyba: nemôže získať inštanciu modulu %s';
+$lang['error_nofilename'] = 'Názov súboru neznámy';
+$lang['error_nofilesize'] = 'Veľkosť súboru  neznámy';
+$lang['error_nomatchingmodules'] = 'Chyba: nebola nájdená zhoda v repozitári';
+$lang['error_nomodules'] = 'Chyba: nenačítaný zoznam použitých modulo';
+$lang['error_norepositoryurl'] = 'Addresa pre repozitár modul nebol zadaný';
+$lang['error_noresults'] = 'Očakávali sme, že niektoré výsledky majú byť k dispozícii z poradia. Prosím, skúste reprodukovať toto zistenie, a poskytite dostatočné informácie pre podporu.';
+$lang['error_permissions'] = '<strong><em>Varovanie:</em></strong> Nedostatočné práva pre adresár modules. Pravdepodobne máte zapnutý Safe mód. Prosím uistite sa, či máte vypnutý Safe mód, a že adresár modules má dostatočné práva na zapisovanie.';
+$lang['error_request_problem'] = 'Problém pri komunikácie so serverom';
+$lang['error_search'] = 'Chyba pri vyhľadávanú';
+$lang['error_searchterm'] = 'Prosím zadajte vyhľadávaci dotaz';
+$lang['error_skipping'] = 'Preskoči inštaláciu/aktualizáciu %s z dôvodu chyby pri nastaveniach závislostí. Prosím prečítajte si nižšie chybovú správu a vyskúšajte znovu.';
+$lang['error_unsatisfiable_dependency'] = 'Nenájdené vyžadované moduly "%s" (verzia %s alebo vyššia) v repozitári. Priamo vyžaduje %s; čo môže znamenať problémy s touto verziou v repozitári. Prosím kontaktujte vývojára modulu.';
+$lang['error_upgrade'] = 'Aktualizácia modulu %s s chybou!';
+$lang['friendlyname'] = 'Správa modulov';
+$lang['general_notice'] = 'The versions displayed here represent the latest XML files uploaded to your selected repository (usually the CMS %s).  They may or may not represent the latest available versions.  You may want to view the available file releases on the repository you have selected.  If you are using the default repository, you can do this by typing in the module name into the search box on the %s and clicking on the "Files" button.';
+$lang['help'] = '<h3>What Does This Do?</h3>
+<p>A client for the ModuleRepository, this module allows previewing, and installing modules from remote sites without the need for ftping, or unzipping archives.  Module XML files are downloaded using REST, integrity verified, and then expanded automatically.</p>
+<h3>How Do I Use It</h3>
+<p>In order to use this module, you will need the \'Modify Modules\' permission, and you will also need the complete, and full URL to a \'Module Repository\' installation.  You can specify this url in the \'Extensions\' --> \'Module Manager\' --> \'Preferences\' page.</p><br/>
+<p>You can find the interface for this module under the \'Extensions\' menu.  When you select this module, the \'Module Repository\' installation will automatically be queried for a list of it\'s available xml modules.  This list will be cross referenced with the list of currently installed modules, and a summary page displayed.  From here, you can view the descriptive information, the help, and the about information for a module without physically installing it.  You can also choose to upgrade or install modules.</p>
+<h3>Support</h3>
+<p>As per the GPL, this software is provided as-is. Please read the text of the license for the full disclaimer.</p>
+<h3>Copyright and License</h3>
+<p>Copyright &copy; 2006, calguy1000 <a href="mailto:calguy1000@hotmail.com"><calguy1000@hotmail.com></a>. All Rights Are Reserved.</p>
+<p>This module has been released under the <a href="http://www.gnu.org/licenses/licenses.html#GPL">GNU Public License</a>. You must agree to this license before using the module.</p>';
+$lang['helptxt'] = 'Pomocník k modulu';
+$lang['incompatible'] = 'Nekompatibilný';
+$lang['install'] = 'inštalovať';
+$lang['installed'] = 'Modul verzia %s nainštalovaný.';
+$lang['install_submit'] = 'Inštalovať';
+$lang['install_with_deps'] = 'Overiť závistlosti a nainštalovať';
+$lang['instcount'] = 'Nainštalované moduly';
+$lang['latestdepends'] = 'Vždy inštalovať novšiu verziu';
+$lang['mod_name_ver'] = '%s verzia %s';
+$lang['moddescription'] = 'Klient pre repozitár modulov, umožňuje náhľad a inštaláciu modulov zo serverou bez použitia FTP alebo rozbaľovania, Moduly vo formáte XML sú štahované cez protokol SOAP, verifikované a automatický nahrávané.';
+$lang['msg_nodependencies'] = 'Tento súbor nemá žiadnu závislosť.';
+$lang['nametext'] = 'Názov modulu';
+$lang['newerversion'] = 'Je nainštalovaná novšia verzia';
+$lang['notice'] = 'Oznámenie';
+$lang['onlynewesttext'] = 'Zobraziť iba najnovšiu verziu';
+$lang['operation_results'] = 'Výsledok operácie';
+$lang['postinstall'] = 'Modul Správa modulov vol úspešne nainštalovaný';
+$lang['postuninstall'] = 'Správca modulov odinštalovany.  Už nebudete môcť  inštalovať moduly z repozitára, avšak nainštalované moduly na vašom serveri ostávaju bežať.';
+$lang['preferences'] = 'Nastavenia';
+$lang['preferencessaved'] = 'Nastavenia uložené';
+$lang['prompt_advancedsearch'] = 'Rozšírené vyhľadávanie';
+$lang['prompt_disable_caching'] = 'Vypnúť kešovanie požiadaviek na server';
+$lang['prompt_dl_chunksize'] = 'Veľkosť sťahovateľnej časti (Kb)';
+$lang['prompt_otheroptions'] = 'Ostatné voľby';
+$lang['prompt_repository_url'] = 'Adresa zdroja repozitára modulov';
+$lang['prompt_settings'] = 'Nastavenia';
+$lang['really_uninstall'] = 'Ste si istý, že chcete odinštalovať tento modul? Prídete o pár pekných funkcií.';
+$lang['repositorycount'] = 'Moduly nájdené v repozitáry';
+$lang['reset'] = 'Resetnúť';
+$lang['search'] = 'Vyhľadávanie';
+$lang['searchterm'] = 'Vyhľadávací dotaz';
+$lang['search_input'] = 'Vyhľadávanie';
+$lang['search_noresults'] = 'Neboli nájdene žiadne položky';
+$lang['search_results'] = 'Výsledky vyhľadávania';
+$lang['sizetext'] = 'Veľkosť (kilobajty)';
+$lang['statustext'] = 'Stav/Akcia';
+$lang['submit'] = 'Odoslať';
+$lang['time_warning'] = 'Zoznam modul pre inštaláciu obsahuje viac ako1-2 moduly. Budte opatrný, inštalácia môže trvať  niekoľko minút';
+$lang['title_installation_complete'] = 'Inštalácia kompletná.';
+$lang['uninstalled'] = 'Modul odinštalovaný';
+$lang['unknown'] = 'Neznáme';
+$lang['upgrade'] = 'Aktualizácia';
+$lang['upgraded'] = 'Modul aktualizovaný na verziu %s.';
+$lang['upgrade_available'] = 'Novšia verzia dostupná (%s), vy máte (%s)';
+$lang['uptodate'] = 'Nainštalovaný';
+$lang['use_at_your_own_risk'] = 'Použitie na vlastné nepezpečenstvo';
+$lang['versionsformodule'] = 'Dostupná verzia modulu %s';
+$lang['vertext'] = 'Verzia';
+$lang['xmltext'] = 'XML súbor';
+$lang['yourversion'] = 'Vaša verzia';
+?>

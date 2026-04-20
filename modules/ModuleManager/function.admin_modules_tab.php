@@ -59,7 +59,7 @@ else if (isset($_SESSION['mm_curletter'])) {
 
 
 // get the modules available in the repository
-$repmodules = '';
+$repmodules = array();
 {
   $result = modulerep_client::get_repository_modules($curletter);
   if( ! $result[0] ) {
@@ -70,7 +70,7 @@ $repmodules = '';
 }
 
 // get the modules that are already installed
-$instmodules = '';
+$instmodules = array();
 {
   $result = modmgr_utils::get_installed_modules();
   if( ! $result[0] ) {
@@ -90,9 +90,8 @@ foreach( $tmp as $i ) {
 
 // cross reference them
 $data = array();
-if( count($repmodules ) ) $data = modmgr_utils::build_module_data($repmodules, $instmodules);
-if( count( $data ) ) {
-  $size = count($data);
+if( is_array($repmodules) && count($repmodules) ) $data = modmgr_utils::build_module_data($repmodules, $instmodules);
+if( is_array($data) && count($data) ) {
 
   // check for permissions
   $moduledir = dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR."modules";
@@ -100,13 +99,13 @@ if( count( $data ) ) {
 
   // build the table
   $rowarray = array();
-  $newestdisplayed="";
   foreach( $data as $row ) {
     $onerow = new stdClass();
     foreach( $row as $key => $value ) {
       $onerow->$key = $value;
     }
     $onerow->name = $this->CreateLink( $id, 'modulelist', $returnid, $row['name'], array('name'=>$row['name']));
+    $onerow->rawname = $row['name'];
     $onerow->version = $row['version'];
     $onerow->help_url = $this->create_url( $id, 'modulehelp', $returnid,
 					   array('name' => $row['name'],'version' => $row['version'],'filename' => $row['filename']));
@@ -192,8 +191,8 @@ else {
 // Setup search form
 $searchstart = $this->CreateFormStart( $id, 'searchmod', $returnid );
 $searchend = $this->CreateFormEnd();
-$searchfield = $this->CreateInputText($id, 'search_input', "Doesn't Work",  30, 100); //todo
-$searchsubmit = $this->CreateInputSubmit( $id, 'submit', 'Search'); // todo -- $this->Lang('search'));
+$searchfield = $this->CreateInputText($id, 'search_input', '', 30, 100);
+$searchsubmit = $this->CreateInputSubmit( $id, 'submit', $this->Lang('search'));
 $smarty->assign('search',$searchstart.$searchfield.$searchsubmit.$searchend);
 
 // and display our page

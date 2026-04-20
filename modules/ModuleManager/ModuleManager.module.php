@@ -40,11 +40,11 @@ define('MINIMUM_REPOSITORY_VERSION','1.5');
 
 class ModuleManager extends CMSModule
 {
-  const _dflt_request_url = 'https://www.cmsmadesimple.org/ModuleRepository/request/v2/';
+  const _dflt_request_url = 'https://api.cmsmadesimple.org/ModuleRepository/request/v2/';
 
   function GetName() { return get_class($this); }
   function GetFriendlyName() { return $this->Lang('friendlyname'); }
-  function GetVersion() { return '2.1.9'; }
+  function GetVersion() { return '2.1.11'; }
   function GetHelp() { return $this->Lang('help'); }
   function GetAuthor() { return 'calguy1000'; }
   function GetAuthorEmail() { return 'calguy1000@hotmail.com'; }
@@ -55,7 +55,7 @@ class ModuleManager extends CMSModule
   function GetAdminSection() { return 'siteadmin'; }
   function GetAdminDescription() { return $this->Lang('admindescription'); }
   function LazyLoadAdmin() { return TRUE; }
-  function MinimumCMSVersion() { return '2.2.3'; }
+  function MinimumCMSVersion() { return '2.2.17'; }
   function InstallPostMessage() { return $this->Lang('postinstall'); }
   function UninstallPostMessage() { return $this->Lang('postuninstall'); }
   function UninstallPreMessage() { return $this->Lang('really_uninstall'); }
@@ -74,11 +74,16 @@ class ModuleManager extends CMSModule
   function Install()
   {
     $this->SetPreference('module_repository',ModuleManager::_dflt_request_url);
+    // Reserved for optional browser-side static URLs; PHP repository API calls use module_repository (API gateway) only.
+    $this->SetPreference('module_repository_cdn','https://cdn.cmsmadesimple.org/ModuleRepository/request/v2/');
   }
 
   function Upgrade($oldversion, $newversion)
   {
     $this->SetPreference('module_repository',ModuleManager::_dflt_request_url);
+    if( !$this->GetPreference('module_repository_cdn') ) {
+      $this->SetPreference('module_repository_cdn','https://cdn.cmsmadesimple.org/ModuleRepository/request/v2/');
+    }
   }
 
   function DoAction($action, $id, $params, $returnid=-1)

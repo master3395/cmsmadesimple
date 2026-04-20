@@ -39,18 +39,52 @@ if( !$this->CheckPermission('Modify Site Preferences' ) ) return;
 
 $this->SetCurrentTab('prefs');
 
-if( isset($config['developer_mode']) && !empty($params['reseturl']) ) {
+if( !empty($params['reseturl']) ) {
     $this->SetPreference('module_repository',ModuleManager::_dflt_request_url);
     $this->SetMessage($this->Lang('msg_urlreset'));
-    $this->RedirectToAdminTab();
+    $this->Redirect($id,'defaultadmin',$returnid,array('__activetab'=>'prefs'));
+}
+
+if( !empty($params['checkrepo']) ) {
+    $url = trim((string)get_parameter_value($params,'url',$this->GetPreference('module_repository')));
+    $url = rtrim($url,'/');
+    if( $url === '' ) {
+        $this->SetError($this->Lang('error_norepositoryurl'));
+        $this->Redirect($id,'defaultadmin',$returnid,array('__activetab'=>'prefs'));
+    }
+
+    $check_url = $url.'/version';
+    $req = new modmgr_cached_request();
+    $req->setTimeout(10);
+    $req->execute($check_url);
+    $status = (int)$req->getStatus();
+    $result = (string)$req->getResult();
+    if( $status === 200 && $result !== '' ) {
+        $ver = json_decode($result,true);
+        if( is_string($ver) && version_compare($ver,MINIMUM_REPOSITORY_VERSION) >= 0 ) {
+            $this->SetPreference('module_repository',$url.'/');
+            $this->SetMessage('Repository URL is reachable and compatible. Saved.');
+        }
+        else {
+            $this->SetError('Repository URL responded but version is not compatible.');
+        }
+    }
+    else {
+        $this->SetError('Repository check failed (HTTP '.$status.').');
+    }
+    $this->Redirect($id,'defaultadmin',$returnid,array('__activetab'=>'prefs'));
 }
 if( isset($params['dl_chunksize']) ) $this->SetPreference('dl_chunksize',(int)trim($params['dl_chunksize']));
 $latestdepends = (int)get_parameter_value($params,'latestdepends');
 $this->SetPreference('latestdepends',$latestdepends);
+$this->SetPreference('show_beta',(int)get_parameter_value($params,'show_beta'));
 
+
+if( isset($params['url']) ) {
+    $this->SetPreference('module_repository',trim($params['url']));
+}
 
 if( isset($config['developer_mode']) ) {
-    if( isset($params['url']) ) $this->SetPreference('module_repository',trim($params['url']));
     $disable_caching = (int)get_parameter_value($params,'disable_caching');
     $this->SetPreference('disable_caching',$disable_caching);
     $this->SetPreference('allowuninstall',(int)get_parameter_value($params,'allowuninstall'));
@@ -60,5 +94,5 @@ else {
 }
 
 $this->SetMessage($this->Lang('msg_prefssaved'));
-$this->RedirectToAdminTab();
+$this->Redirect($id,'defaultadmin',$returnid,array('__activetab'=>'prefs'));
 ?>

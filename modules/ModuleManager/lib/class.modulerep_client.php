@@ -39,12 +39,24 @@ final class modulerep_client
 {
     private static $_latest_installed_modules;
 
+    /**
+     * Base URL for server-side repository API calls (PHP/curl).
+     * Must use the API gateway from the module_repository preference only.
+     * The CDN host may return 403 or otherwise block non-CDN server requests, so it must not be used here.
+     */
+    private static function get_api_repository_base()
+    {
+        $mod = cms_utils::get_module('ModuleManager');
+        $api = trim((string)$mod->GetPreference('module_repository'));
+        return rtrim($api,'/');
+    }
+
     protected function __construct() {}
 
     public static function get_repository_version()
     {
         $mod = cms_utils::get_module('ModuleManager');
-        $url = $mod->GetPreference('module_repository');
+        $url = self::get_api_repository_base();
         if( !$url )	return array(false,$mod->Lang('error_norepositoryurl'));
         $url .= '/version';
 
@@ -80,7 +92,7 @@ final class modulerep_client
                 throw new CmsInvalidDataException($mod->Lang('error_missingparam'));
             }
         }
-        if( count($out) == 0 ) new CmsInvalidDataException($mod->Lang('error_missingparam'));
+        if( count($out) == 0 ) throw new CmsInvalidDataException($mod->Lang('error_missingparam'));
 
         $url = $mod->GetPreference('module_repository');
         if( !$url )	return array(false,$mod->Lang('error_norepositoryurl'));
@@ -104,36 +116,52 @@ final class modulerep_client
     public static function get_repository_modules($prefix = '',$newest = 1,$exact = FALSE)
     {
         $mod = cms_utils::get_module('ModuleManager');
-        $url = $mod->GetPreference('module_repository');
-        if( !$url )	return array(false,$mod->Lang('error_norepositoryurl'));
-        $url .= '/moduledetailsgetall';
+        $preferred = $mod->GetPreference('module_repository');
+        $candidates = modmgr_utils::get_repository_candidates($preferred);
 
         global $CMS_VERSION;
-        $data = array('newest'=>$newest);
-        if( $prefix ) $data['prefix'] = ltrim($prefix);
-        if( $exact ) $data['exact'] = 1;
-        $data['clientcmsversion'] = $CMS_VERSION;
+        $qdata = array('newest'=>$newest);
+        if( $prefix ) $qdata['prefix'] = ltrim($prefix);
+        if( $exact ) $qdata['exact'] = 1;
+        $qdata['clientcmsversion'] = $CMS_VERSION;
 
-        $req = new modmgr_cached_request();
-        $req->execute($url,$data);
-        $status = $req->getStatus();
-        $result = $req->getResult();
-        if( $status == 400 ) {
-            return array(true,array());
-        }
-        else if( $status != 200 || $result == '' ) {
-            return array(FALSE,$mod->Lang('error_request_problem'));
+        $last_status = 0;
+        foreach( $candidates as $base ) {
+            $base = rtrim((string)$base,'/');
+            if( $base === '' ) continue;
+            $url = $base.'/moduledetailsgetall';
+
+            $req = new modmgr_cached_request();
+            $req->execute($url,$qdata);
+            $status = $req->getStatus();
+            $result = $req->getResult();
+            $last_status = (int)$status;
+
+            if( $status == 400 ) {
+                if( modmgr_utils::normalize_repo_url($preferred) !== $base ) {
+                    $mod->SetPreference('module_repository',$base.'/');
+                }
+                return array(true,array());
+            }
+            if( $status == 200 && $result !== '' ) {
+                if( modmgr_utils::normalize_repo_url($preferred) !== $base ) {
+                    $mod->SetPreference('module_repository',$base.'/');
+                }
+                $data = json_decode($result,true);
+                return array(true,$data);
+            }
+            $req->clearCache();
         }
 
-        $data = json_decode($result,true);
-        return array(true,$data);
+        if( $last_status == 400 ) return array(true,array());
+        return array(FALSE,$mod->Lang('error_request_problem'));
     }
 
     public static function get_module_dependencies($module_name,$module_version = '')
     {
         $mod = cms_utils::get_module('ModuleManager');
         if( !$module_name ) throw new CmsInvalidDataException($mod->Lang('error_missingparams'));
-        $url = $mod->GetPreference('module_repository');
+        $url = self::get_api_repository_base();
         if( $url == '' ) throw new CmsInvalidDataException($mod->Lang('error_norepositoryurl'));
         $url .= '/moduledependencies';
 
@@ -160,7 +188,7 @@ final class modulerep_client
     {
         $mod = cms_utils::get_module('ModuleManager');
         if( !$xmlfile ) throw new CmsInvalidDataException($mod->Lang('error_nofilename'));
-        $url = $mod->GetPreference('module_repository');
+        $url = self::get_api_repository_base();
         if( $url == '' ) throw new CmsInvalidDataException($mod->Lang('error_norepositoryurl'));
         $url .= '/moduledepends';
 
@@ -188,14 +216,14 @@ final class modulerep_client
             // must download
             $orig_chunksize = $mod->GetPreference('dl_chunksize',256);
             $chunksize = $orig_chunksize * 1024;
-            $url = $mod->GetPreference('module_repository');
+            $url = self::get_api_repository_base();
             if( $url == '' ) return FALSE;
 
             if( $size <= $chunksize ) {
                 // downloading the whole file at one shot.
                 $url .= '/modulexml';
                 $req = new cms_http_request();
-                $req->execute($url,'','POST',array('name'=>$xmlfile));
+                $req->execute($url,'','GET',array('name'=>$xmlfile));
                 $status = $req->GetStatus();
                 $result = $req->GetResult();
                 if( $status != 200 || $result == '' ) {
@@ -214,7 +242,7 @@ final class modulerep_client
             $nchunks = (int)ceil($size / $chunksize);
             $req = new cms_http_request();
             for( $i = 0; $i < $nchunks; $i++ ) {
-                $req->execute($url,'','POST', array('name'=>$xmlfile,'partnum'=>$i,'sizekb'=>$orig_chunksize));
+                $req->execute($url,'','GET', array('name'=>$xmlfile,'partnum'=>$i,'sizekb'=>$orig_chunksize));
                 $status = $req->GetStatus();
                 $result = $req->GetResult();
                 if( $status != 200 || $result == '' ) {
@@ -238,7 +266,7 @@ final class modulerep_client
     {
         $mod = cms_utils::get_module('ModuleManager');
         if( !$xmlfile ) throw new CmsInvalidDataException($mod->Lang('error_nofilename'));
-        $url = $mod->GetPreference('module_repository');
+        $url = self::get_api_repository_base();
         if( $url == '' ) throw new CmsInvalidDataException($mod->Lang('error_norepositoryurl'));
         $url .= '/modulemd5sum';
 
@@ -270,7 +298,7 @@ final class modulerep_client
         $url .= '/modulesearch';
 
         $req = new modmgr_cached_request();
-        $req->execute($url,array('json'=>json_encode($qparms)));
+        $req->execute($url,array('json'=>json_encode($qparms)),'','POST');
         $status = $req->getStatus();
         $result = $req->getResult();
         if( $status == 200 && $result == ''  ) return array(TRUE,null); // no results.
@@ -337,7 +365,7 @@ final class modulerep_client
     {
         $versions = self::get_allmoduleversions();
         if( !is_array($versions) ) return FALSE;
-        if( count($versions) == 2 && $versions[0] === FALSE ) return FALSE;
+        if( is_array($versions) && count($versions) == 2 && $versions[0] === FALSE ) return FALSE;
 
         $out = array();
         foreach( $versions as $row ) {
@@ -347,14 +375,15 @@ final class modulerep_client
                 $out[$row['name']] = $row;
             }
         }
-        if( count($out) ) return $out;
+        if( is_array($out) && count($out) ) return $out;
+        return array();
     }
 
     public static function get_upgrade_module_info($module_name)
     {
         $versions = self::get_allmoduleversions();
         if( !is_array($versions) ) return FALSE;
-        if( count($versions) == 2 && $versions[0] === FALSE ) return FALSE;
+        if( is_array($versions) && count($versions) == 2 && $versions[0] === FALSE ) return FALSE;
 
         foreach( $versions as $row ) {
             if( $row['name'] == $module_name ) return $row;

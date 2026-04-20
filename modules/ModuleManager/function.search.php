@@ -47,7 +47,7 @@ if( FALSE == can_admin_upload() ) {
 $search_data = null;
 $term = '';
 $advanced = 0;
-if( isset($_SESSION['modmgr_search']) ) $search_data = unserialize($_SESSION['modmgr_search']);
+if( isset($_SESSION['modmgr_search']) ) $search_data = unserialize($_SESSION['modmgr_search'],array('allowed_classes'=>false));
 if( isset($_SESSION['modmgr_searchterm']) ) $term = $_SESSION['modmgr_searchterm'];
 if( isset($_SESSION['modmgr_searchadv']) ) $advanced = $_SESSION['modmgr_searchadv'];
 
@@ -57,7 +57,7 @@ $clear_search = function() use (&$search_data) {
 };
 
 // get the modules that are already installed
-$instmodules = '';
+$instmodules = array();
 {
     $result = modmgr_utils::get_installed_modules();
     if( ! $result[0] ) {
@@ -81,7 +81,11 @@ if( isset($params['submit']) ) {
 
         $res = $res[1];
         $data = array();
-        if( count($res) ) $res = modmgr_utils::build_module_data($res, $instmodules);
+        if( is_array($res) && count($res) ) {
+            $res = modmgr_utils::build_module_data($res, $instmodules);
+        } else {
+            $res = array();
+        }
 
         $config = cmsms()->GetConfig();
         $moduledir = $config['root_path'].DIRECTORY_SEPARATOR.'modules';
@@ -95,6 +99,7 @@ if( isset($params['submit']) ) {
                 $obj->$k = $v;
             }
             $obj->name = $this->CreateLink( $id, 'modulelist', $returnid, $row['name'],array('name'=>$row['name']));
+            $obj->rawname = $row['name'];
             $obj->version = $row['version'];
             $obj->help_url = $this->create_url( $id, 'modulehelp', $returnid,
                                                 array('name'=>$row['name'],'version'=>$row['version'],'filename'=>$row['filename']) );
@@ -162,7 +167,7 @@ if( isset($params['submit']) ) {
             $search_data[] = $obj;
         }
         $_SESSION['modmgr_search'] = serialize($search_data);
-        $_SESSION['mogmgr_searchterm'] = $term;
+        $_SESSION['modmgr_searchterm'] = $term;
         $_SESSION['modmgr_searchadv'] = $params['advanced'];
     }
     catch( \Exception $e ) {

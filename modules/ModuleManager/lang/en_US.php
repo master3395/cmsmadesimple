@@ -101,11 +101,24 @@ $lang['general_notice'] = 'The versions displayed here represent the latest XML 
 
 // H
 $lang['help'] = '<h3>What Does This Do?</h3>
-<p>A client for the CMS Made Simple Module Repository. This module allows previewing and installing modules from the CMSMS Forge without the need for ftp-ing, or unzipping archives.  Module XML files are downloaded using REST, integrity verified, and then expanded automatically.</p>
+<p>A client for the CMS Made Simple Module Repository. This module allows previewing and installing modules from the CMSMS Forge without the need for ftp-ing, or unzipping archives. Module XML files are downloaded using REST, integrity verified, and then expanded automatically.</p>
 <h3>How Do I Use It</h3>
 <p>In order to use this module you will need the \'Modify Modules\' permission.</p>
 <br />
-<p>You can find the interface for this module under the \'Site Admin\' menu.  When you select this module, the \'Module Repository\' installation will automatically be queried for a list of it\'s available XML modules.  This list will be cross referenced with the list of currently installed modules, and a summary page displayed.  From here, you can view the descriptive information, the Help, and the About information for a module without physically installing it.  You can also choose to upgrade or install modules.</p>
+<p>You can find the interface for this module under the \'Site Admin\' menu. When you select this module, the \'Module Repository\' installation will automatically be queried for a list of its available XML modules. This list is cross referenced with currently installed modules and a summary page is displayed. From here, you can view Help/About, install modules, and upgrade modules.</p>
+<h3>Repository Fallback (20.04.2026)</h3>
+<p>This build includes repository fallback checks for both of these URLs:</p>
+<ul>
+<li>https://api.cmsmadesimple.org/ModuleRepository/request/v2/</li>
+<li>https://www.cmsmadesimple.org/ModuleRepository/request/v2/</li>
+</ul>
+<p>If one endpoint responds correctly, ModuleManager saves the working endpoint automatically.</p>
+<h3>ModuleManager v2.1.10 Direction (April, 2026)</h3>
+<p>This release follows the same direction discussed in the ModuleManager v2.1.10 upstream PR: faster repository read operations, improved API endpoint usage, and cleaner module browsing UX with optional pre-release visibility controls.</p>
+<h3>Stability and Compatibility Updates (20.04.2026)</h3>
+<p>This build includes recovery-safe settings rendering so the repository URL can still be edited if module repository calls fail, PHP 8 list/search/install hardening, safer cache parsing and malformed-response handling, corrected search term session persistence, and improved tab-state handling so Settings and Installed tabs remain reliable.</p>
+<h3>Requirements (20.04.2026)</h3>
+<p>This build requires CMS Made Simple 2.2.17 or newer. Core 2.2.17 and later include the PHP 8.x compatibility work needed together with this module; older CMSMS releases are not a supported combination with the code paths hardened for PHP 8 in this fork.</p>
 <h3>Support</h3>
 <p>As per the GPL, this software is provided as-is. Please read the text of the license for the full disclaimer.</p>
 <h3>Copyright and License</h3>
@@ -117,6 +130,7 @@ $lang['help_disable_caching'] = 'TODO';
 $lang['help_dl_chunksize'] = 'This parameter specifies the size <em>(in kilobytes)</em> of each chunk of data that will be downloaded from the repository when requesting a module.';
 $lang['help_latestdepends'] = 'When installing a module with dependencies, this will ensure that the newest version of a dependent module is installed';
 $lang['help_mm_importxml'] = 'This form allows importing a module XML file that you received from another user, or downloaded from the <a class="external" href="http://dev.cmsmadesimple.org" target="_blank">CMSMS Forge</a>';
+$lang['help_show_beta'] = 'When enabled, modules with beta, alpha, or rc in their version will be displayed in the module listings';
 
 // I
 $lang['importxml'] = 'Import Module';
@@ -155,6 +169,7 @@ $lang['msg_module_uninstalled'] = 'Module %s successfully uninstalled. Templates
 $lang['msg_module_upgraded'] = 'Module %s successfully upgraded';
 $lang['msg_nodependencies'] = 'This file has not listed any dependencies';
 $lang['msg_prefssaved'] = 'Preferences Updated';
+$lang['msg_stored_version_synced'] = 'The version stored in the database for Module Manager was higher than the version in your module files. It has been updated to match the files (%s).';
 $lang['msg_urlreset'] = 'The ModuleRepository URL has been reset to the default value';
 
 // N
@@ -202,6 +217,7 @@ $lang['status'] = 'Status';
 $lang['status_db_newer'] = 'The version number stored in the database is greater than the one in the module.';
 $lang['status_need_upgrade'] = 'The upgrade routine needs to be run on this module';
 $lang['status_newer_available'] = 'A newer version of this module is available in the repository';
+$lang['show_beta'] = 'Show beta/pre-release modules';
 $lang['statustext'] = 'Status/Action';
 $lang['status_installed'] = 'This module is currently installed and available for use.';
 $lang['submit'] = 'Submit';

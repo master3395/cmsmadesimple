@@ -1,0 +1,103 @@
+<?php
+$lang['abouttxt']='توضيحات';
+$lang['accessdenied']='دسترسی مجاز نمی باشد. لطفاً دسترسی های خود را بررسی كنيد.';
+$lang['action_activated']='ماژول %s فعال بوده است.';
+$lang['action_installed']='ماژول %s نصب بوده است: %s';
+$lang['action_upgraded']='ماژول %s ارتقاء يافته است';
+$lang['admindescription']='ابزاری جهت دريافت ماژول ها از سرور خارجی';
+$lang['advancedsearch_help']='برای اينكه كلمه ی مورد نظر در جستجو قرار گيرد يا در جستجو نباشد از كاراكترهای - يا + استفاده كنيد (همانند موتور جستجوی گوگل)، همچنين برای جستجوی عبارت دقيق؛ كلمه (ها) را در كاراكتر نقل قول(&quot;) قرار دهيد.  به عنوان مثال:  +red -apple +&quot;some text&quot;';
+$lang['all_modules_up_to_date']='هيچ پاسخي از منبع براي ماژول جديد وجود ندارد';
+$lang['available_updates']='ماژول براي بروزرساني در دسترس مي باشد; قبل از ارتقاء، لطفاً نكات مربوط به اين نسخه را مطالعه كنيد و از سايت خود نسخه ي پشتيبان تهيه كنيد .';
+$lang['availablemodules']='وضعيت كنوني ماژول ها از ماژول هاي در دسترس منبع كنوني';
+$lang['availmodules']='ماژول های موجود';
+$lang['back_to_module_manager']='&laquo; بازگشت به مديريت ماژول ها';
+$lang['cantdownload']='قابل دريافت نمی باشد';
+$lang['depend_activate']='ماژول %s فعال است.';
+$lang['depend_install']='ماژول %s (نسخه %s) نصب خواهد شد.';
+$lang['depend_upgrade']='ماژول %s به نسخه %s ارتقاء پيدا خواهد كرد.';
+$lang['dependstxt']='متعلقات';
+$lang['download']='دريافت و نصب';
+$lang['error']='خطا!';
+$lang['error_downloadxml']='خطايی در دريافت فايل XML بوجود آمده است. نام فايل: %s';
+$lang['error_internal']='خطای داخلی .... لطفاً اين مورد را به مديريت سايت گزارش دهيد';
+$lang['error_minimumrepository']='نسخه ي منبع با مديريت ماژول سازگار نمي باشد';
+$lang['error_module_object']='خطا: قادر به دريافت مثال ماژول %s نمي باشد';
+$lang['error_moduleinstallfailed']='نصب ماژول با مشكل مواجه شد';
+$lang['error_nofilename']='هيچ پارامتری برای نام تعيين نشده است';
+$lang['error_nofilesize']='هيچ پارامتری برای حجم تعيين نشده است';
+$lang['error_nomatchingmodules']='خطا: قادر به يافتن ماژول مشابه در منبع نمي باشد';
+$lang['error_nomodules']='خطا: قادر به يافتن ليست ماژول های نصب شده نمی باشد';
+$lang['error_norepositoryurl']='آدرس منبع ماژول تعيين نشده است';
+$lang['error_noresults']='انتظار مي رفت برخي  نتايج از عمليات هاي صف بندي شده در دسترس باشد. اما هيچ نتيجه اي دربر نداشت. لطفاً مجدداً تلاش كنيد و اطلاعات كافي  براي پرسنل پشتيباني ارسال كنيد تا تشخيص داده شود';
+$lang['error_permissions']='<strong><em>هشدار:</em></strong> عدم مجوز دسترسي به پوشه  براي نصب ماژول.  ممكن است اين مشكل با PHP Safe mode حل شود.  لطفاً از غير فعال شدن حالت امن مطمئن شويد, و مجوزهاي لازم را براي نصب ماژول بررسي كنيد.';
+$lang['error_request_problem']='خطايي در برقراری ارتباط با سرور ماژول بوجود آمد';
+$lang['error_search']='خطا در جستجو';
+$lang['error_searchterm']='لطفاً از مقادير مجاز برای جستجو اين كلمه استفاده كنيد:';
+$lang['error_unsatisfiable_dependency']='Cannot find the required module &quot;%s&quot; (version %s or later) in the repository. It is directly required by %s; this could indicate a problem with the version of this module in the repository. Please contact the module&#039;s author. Aborting.';
+$lang['error_upgrade']='ارتقاء ماژول  %s با مشكل مواجه شد!';
+$lang['friendlyname']='مديريت ماژول';
+$lang['help']='<h3>What Does This Do?</h3>
+<p>A client for the ModuleRepository, this module allows previewing, and installing modules from remote sites without the need for ftping, or unzipping archives.  Module XML files are downloaded using REST, integrity verified, and then expanded automatically.</p>
+<h3>How Do I Use It</h3>
+<p>In order to use this module, you will need the &#039;Modify Modules&#039; permission, and you will also need the complete, and full URL to a &#039;Module Repository&#039; installation.  You can specify this url in the &#039;Extensions&#039; --> &#039;Module Manager&#039; --> &#039;Preferences&#039; page.</p><br/>
+<p>You can find the interface for this module under the &#039;Extensions&#039; menu.  When you select this module, the &#039;Module Repository&#039; installation will automatically be queried for a list of it&#039;s available xml modules.  This list will be cross referenced with the list of currently installed modules, and a summary page displayed.  From here, you can view the descriptive information, the help, and the about information for a module without physically installing it.  You can also choose to upgrade or install modules.</p>
+<h3>پشتيباني</h3>
+<p>As per the GPL, this software is provided as-is. Please read the text of the license for the full disclaimer.</p>
+<h3>Copyright and License</h3>
+<p>Copyright &copy; 2006, calguy1000 <a href="mailto:calguy1000@hotmail.com"><calguy1000@hotmail.com></a>. All Rights Are Reserved.</p>
+<p>This module has been released under the <a href="http://www.gnu.org/licenses/licenses.html#GPL">GNU Public License</a>. You must agree to this license before using the module.</p>';
+$lang['helptxt']='راهنما';
+$lang['incompatible']='ناسازگار!';
+$lang['info_disable_caching']='<strong>توصيه نمی شود</strong>.  برای كارایی بهتر، مديريت ماژول اقئدام به ذخيره سازی (به طور پيش فرض يك ساعت) مقادير زيادی از اطلاعات انتقال داده شده از سرور ماژول را دريافت خواهد كرد';
+$lang['info_latestdepends']='زماني كه يك ماژول بصورت وابسته نصب شود، اين گزينه امكان اطلاع رساني از آخرين نسخه را براي شما فراهم خواهد كرد';
+$lang['install']='نصب';
+$lang['install_submit']='نصب';
+$lang['install_with_deps']='ارزيابی تمام متعلقات و نصب آن';
+$lang['installed']='ماژول نسخه ی %s نصب شد.';
+$lang['instcount']='ماژول های نصب شده';
+$lang['latestdepends']='هميشه ماژول های جديد را نصب كن';
+$lang['mod_name_ver']='%s نسخه %s';
+$lang['msg_nodependencies']='اين فايل هيچ گونه وابستگي را ليست نكرده است';
+$lang['nametext']='نام ماژول';
+$lang['newerversion']='جديدترين نسخه نصب می باشد';
+$lang['newversions']='امكانات ارتقاء يافته در دسترس';
+$lang['notice']='نكته';
+$lang['onlynewesttext']='فقط نمايش جديدترين نسخه';
+$lang['operation_results']='نتايج عملكرد';
+$lang['postinstall']='مديريت ماژول با موفقيت نصب شد.';
+$lang['preferences']='تنظيمات';
+$lang['preferencessaved']='تنظيمات ذخيره شد';
+$lang['prompt_advancedsearch']='جستجوی پيشرفته';
+$lang['prompt_disable_caching']='درخواست ذخيره سازی از سرور مربوطه غير فعال شده است';
+$lang['prompt_dl_chunksize']='حجم دريافت (Kb)';
+$lang['prompt_otheroptions']='ساير تنظيمات';
+$lang['prompt_repository_url']='آدرس منبع ماژول';
+$lang['prompt_resetcache']='همه ي ذخيره سازهاي محلي داده ها را ريست كن';
+$lang['prompt_reseturl']='تنظيم مجدد آدرس اينترنتی به حالت پيش فرض';
+$lang['prompt_settings']='تنظيمات';
+$lang['really_uninstall']='آيا برای حذف اطمينان داريد؟ اين امر موجب كاهش كارايی سيستم خواهد شد.';
+$lang['repositorycount']='ماژول هاي يافت شده در منبع';
+$lang['reset']='تنظيم مجدد';
+$lang['search']='جستـــجو';
+$lang['search_input']='ورودی جستجو';
+$lang['search_noresults']='جستجو با موفقيت صورت گرفت اماهيچ نتيجه اي دربر نداشت';
+$lang['search_results']='نتايج جستجو';
+$lang['searchterm']='كلمه جستجو';
+$lang['sizetext']='حجم (كيلوبايت)';
+$lang['statustext']='وضعيت / دستور';
+$lang['submit']='ثبت';
+$lang['text_repository_url']='آدرس اينترنتی بايد به اين شكل باشد http://www.mycmssite.com/ModuleRepository/request/v2 (assuming pretty urls are enabled on the repository server)';
+$lang['title_installation']='نصب';
+$lang['title_installation_complete']='فرآيند نصب با موفقيت انجام شد!';
+$lang['uninstalled']='ماژول حذف شد.';
+$lang['unknown']='ناشناخته';
+$lang['upgrade']='ارتقاء';
+$lang['upgrade_available']='نسخه جديد در دسترس می باشد (%s)، نسخه كنونی شما (%s)';
+$lang['upgraded']='ماژول به نسخه  %s ارتقاء يافت.';
+$lang['uptodate']='نصب شده';
+$lang['use_at_your_own_risk']='استفاده ازآن توصيه نمي شود';
+$lang['versionsformodule']='نسخه ی جديدی از ماژول منتشر شده است %s';
+$lang['vertext']='نسخه';
+$lang['xmltext']='فايل XML';
+$lang['yourversion']='نسخه شما';
+?>

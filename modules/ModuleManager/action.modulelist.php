@@ -45,7 +45,7 @@ $repmodules = modulerep_client::get_repository_modules($prefix,FALSE,TRUE);
 if( !is_array($repmodules) || $repmodules[0] === FALSE ) $this->Redirect($id,'defaultadmin'); // for some reason, nothing matched.
 
 $repmodules = $repmodules[1];
-$instmodules = '';
+$instmodules = array();
 {
   $result = modmgr_utils::get_installed_modules();
   if( ! $result[0] ) {
@@ -63,8 +63,7 @@ if( FALSE == can_admin_upload() ) {
 }
 
 $data = modmgr_utils::build_module_data($repmodules,$instmodules,false);
-if( count( $data ) ) {
-  $size = count($data);
+if( is_array($data) && count($data) ) {
 
   // check for permissions
   $moduledir = dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR."modules";
@@ -72,7 +71,6 @@ if( count( $data ) ) {
 
   // build the table
   $rowarray = array();
-  $newestdisplayed="";
   foreach( $data as $row ) {
     $onerow = new stdClass();
     $onerow->date = $row['date'];

@@ -50,7 +50,7 @@ final class modmgr_cached_request
     }
   }
 
-  public function execute($target = '',$data = array(), $age = '')
+  public function execute($target = '',$data = array(), $age = '', $method = 'GET')
   {
     $mod = cms_utils::get_module('ModuleManager');
     $config = cmsms()->GetConfig();
@@ -64,14 +64,12 @@ final class modmgr_cached_request
 
     // check for the cached file
     $atime = time() - ($age * 60);
-    $status = '';
-    $resutl = '';
     if( (isset($config['developer_mode']) && $mod->GetPreference('disable_caching',0)) ||
         !file_exists($fn) || filemtime($fn) <= $atime ) {
         // execute the request
         $req = new cms_http_request();
         if( $this->_timeout ) $req->setTimeout($this->_timeout);
-        $req->execute($target,'','POST',$data);
+        $req->execute($target,'',$method,$data);
         $this->_status = $req->getStatus();
         $this->_result = $req->getResult();
 
@@ -87,9 +85,19 @@ final class modmgr_cached_request
     }
     else {
         // get data from the cache.
-        $data = unserialize(file_get_contents($fn));
-        $this->_status = $data[0];
-        $this->_result = $data[1];
+        $cached = @file_get_contents($fn);
+        if( $cached !== FALSE ) {
+          $data = @unserialize($cached,array('allowed_classes'=>false));
+          if( is_array($data) && count($data) >= 2 ) {
+            $this->_status = $data[0];
+            $this->_result = $data[1];
+            return;
+          }
+        }
+        // cache was unreadable or invalid, force a clean re-fetch next call.
+        @unlink($fn);
+        $this->_status = 0;
+        $this->_result = '';
     }
   }
 

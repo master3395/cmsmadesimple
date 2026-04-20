@@ -53,4 +53,25 @@ Added dependency checking.
   <li>Handle automatic upgrading of ddependencies.</li>
 </ul>
 </li>
+<li>Version 2.1.11 April, 2026
+<ul>
+  <li>Raised minimum CMS Made Simple version to 2.2.17 (aligns with core releases that support PHP 8.x reliably; this module is hardened for PHP 8).</li>
+  <li>Reference for upstream v2.1.10 changes: <a href="https://github.com/cmsmadesimple/cmsmadesimple/pull/23" target="_blank">PR #23</a>.</li>
+  <li>Updated default repository endpoint and added fallback checks for both API and WWW repository URLs.</li>
+  <li>Fixed &quot;Available Modules&quot; and related repository calls: server-side requests use the API gateway only (the CDN host can block PHP/curl traffic with HTTP 403). The module list now retries the known API and WWW bases if the stored URL fails.</li>
+  <li>When the database still records a higher Module Manager version than the files on disk, opening Module Manager now aligns the stored version, clears module cache, and redirects once so the Installed list shows the correct version (fixes persistent &quot;Database Version Newer&quot; after a file downgrade).</li>
+  <li>Added recovery-safe settings rendering to ensure repository URL can always be edited.</li>
+  <li>Added beta/pre-release visibility setting, repository request method compatibility updates, and module icon UI updates.</li>
+  <li>Hardened module list/search flows for PHP 8 by avoiding non-array `count()` calls in admin listing actions.</li>
+  <li>Fixed search term session persistence key (`modmgr_searchterm`) so search values are retained correctly.</li>
+  <li>Improved cached repository response handling to safely recover from invalid cache payloads and re-fetch cleanly.</li>
+  <li>Replaced placeholder search form defaults in admin modules tab with proper localized labels.</li>
+  <li>Extended PHP 8 compatibility hardening across upgrade/dependency/install flows to avoid unsafe `count()` usage on non-arrays.</li>
+  <li>Fixed repository multi-module info validation by throwing the missing-parameter exception when no valid records are generated.</li>
+  <li>Improved dependency error fallback handling to avoid undefined offset notices when remote responses are malformed.</li>
+  <li>Hardened ModuleManager tab-state handling to prevent malformed active-tab keys from forcing incorrect tab rendering.</li>
+  <li>Normalized Settings redirects and removed duplicate tab parameters that could cause sticky or polluted prefs URLs.</li>
+  <li>Added a guarded Settings-content fallback render path with debug marker support for environments where page_content can remain blank.</li>
+</ul>
+</li>
 </ul>

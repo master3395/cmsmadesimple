@@ -19,9 +19,9 @@
 {function get_module_status_icon}
 {strip}
 {if $status == 'stale'}
-{$stale_img}
+{*$stale_img*}
 {elseif $status == 'warn'}
-{$warn_img}
+{*$warn_img*}
 {elseif $status == 'new'}
 {$new_img}
 {/if}
@@ -33,11 +33,13 @@
 	<thead>
 		<tr>
 			<th></th>
+			<th></th>
 			<th>{$nametext}</th>
 			<th><span title="{$ModuleManager->Lang('title_modulelastversion')}">{$vertext}</span></th>
 			<th><span title="{$ModuleManager->Lang('title_modulelastreleasedate')}">{$ModuleManager->Lang('releasedate')}</span></th>
 			{*<th><span title="{$ModuleManager->Lang('title_moduletotaldownloads')}">{$ModuleManager->Lang('downloads')}</span></th>*}
 			<th><span title="{$ModuleManager->Lang('title_modulestatus')}">{$ModuleManager->Lang('statustext')}</span></th>
+			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
@@ -48,6 +50,7 @@
 		{cycle values="row1,row2" assign='rowclass'}
 			<tr class="{$rowclass}" {if $entry->age=='new'}style="font-weight: bold;"{/if}>
 			<td>{get_module_status_icon status=$entry->age}</td>
+			<td style="text-align:center;"><img src="https://cdn.cmsmadesimple.org/modules/{$entry->rawname}/icon.png" alt="" style="width:24px;height:24px;" onerror="this.style.display='none'"/></td>
 			<td><span title="{$entry->description|strip_tags|cms_escape}">{$entry->name}</span></td>
 			<td>{$entry->version}</td>
 			<td>{$entry->date|localedate_format:'%x'}</td>
@@ -61,6 +64,7 @@
 			<td><a href="{$entry->depends_url}" title="{$ModuleManager->Lang('title_moduledepends')}">{$ModuleManager->Lang('dependstxt')}</a></td>
 			<td><a href="{$entry->help_url}" title="{$ModuleManager->Lang('title_modulehelp')}">{$ModuleManager->Lang('helptxt')}</a></td>
 			<td><a href="{$entry->about_url}" title="{$ModuleManager->Lang('title_moduleabout')}">{$ModuleManager->Lang('abouttxt')}</a></td>
+			<td>{get_module_status_icon status=$entry->age}</td>
 		</tr>
 	{/foreach}
 	</tbody>

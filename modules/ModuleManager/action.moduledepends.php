@@ -69,7 +69,9 @@ if( !$xmlfile ) {
 
 $depends = modulerep_client::get_module_depends($xmlfile);
 if( !is_array($depends) || count($depends) != 2 || $depends[0] == false ) {
-  $this->SetError($depends[1]);
+  $msg = $this->Lang('error_request_problem');
+  if( is_array($depends) && isset($depends[1]) && $depends[1] ) $msg = $depends[1];
+  $this->SetError($msg);
   $this->RedirectToAdminTab();
   return;
 }

@@ -58,6 +58,7 @@ if( !$url ) {
   $this->RedirectToAdminTab();
   return;
 }
+$url = rtrim($url,'/');
 $url .= '/modulehelp';
 
 $xmlfile = get_parameter_value($params,'filename');

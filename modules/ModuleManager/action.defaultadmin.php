@@ -45,6 +45,42 @@ if( isset($params['modulehelp']) ) {
 }
 
 if( !$this->VisibleToAdminUser() ) exit;
+
+// When the database still holds a higher version than the files (manual downgrade or file deploy),
+// align the stored version and refresh caches so the Installed list shows the correct number.
+if( $this->CheckPermission('Modify Modules') ) {
+    $file_version = $this->GetVersion();
+    $db = cmsms()->GetDb();
+    $row = $db->GetRow('SELECT version FROM '.CMS_DB_PREFIX.'modules WHERE module_name = ?',array('ModuleManager'));
+    if( is_array($row) && isset($row['version']) && $row['version'] !== '' && version_compare($row['version'],$file_version,'>') ) {
+        $db->Execute('UPDATE '.CMS_DB_PREFIX.'modules SET version = ? WHERE module_name = ?',array($file_version,'ModuleManager'));
+        if( class_exists('\CMSMS\internal\global_cache') ) {
+            \CMSMS\internal\global_cache::clear('modules');
+        }
+        cmsms()->clear_cached_files();
+        $this->SetMessage($this->Lang('msg_stored_version_synced',$file_version));
+        $tab_for_redirect = get_parameter_value($params,'__activetab','');
+        if( $tab_for_redirect === '' ) $tab_for_redirect = get_parameter_value($params,$id.'__activetab','');
+        if( $tab_for_redirect === '' && isset($_GET[$id.'__activetab']) ) $tab_for_redirect = (string)$_GET[$id.'__activetab'];
+        if( $tab_for_redirect === '' && isset($_GET['__activetab']) ) $tab_for_redirect = (string)$_GET['__activetab'];
+        if( $tab_for_redirect === '' ) $tab_for_redirect = 'installed';
+        $this->Redirect($id,'defaultadmin',$returnid,array('__activetab'=>$tab_for_redirect));
+        return;
+    }
+}
+
+$active_tab = get_parameter_value($params,'__activetab','');
+if( $active_tab === '' ) $active_tab = get_parameter_value($params,$id.'__activetab','');
+if( $active_tab === '' && isset($_GET[$id.'__activetab']) ) {
+    $active_tab = (string)$_GET[$id.'__activetab'];
+}
+if( $active_tab === '' && isset($_GET['__activetab']) ) {
+    $active_tab = (string)$_GET['__activetab'];
+}
+if( $active_tab === '' ) $active_tab = 'installed';
+// Normalize active tab key for CMS tab renderer, which expects __activetab.
+$params['__activetab'] = $active_tab;
+$params[$id.'__activetab'] = $active_tab;
 $tmp = ModuleOperations::get_instance()->GetQueueResults();
 if( is_array($tmp) && count($tmp) ) {
     $tmp2 = array();
@@ -66,8 +102,16 @@ echo '<p>'.$this->Lang('general_notice',$link,$link)."</p>\n";
 echo '<h3>'.$this->Lang('use_at_your_own_risk')."</h3>\n";
 echo '<p>'.$this->Lang('compatibility_disclaimer')."</p></div>\n";
 
-$connection_ok = modmgr_utils::is_connection_ok();
-if( !$connection_ok ) echo $this->ShowErrors($this->Lang('error_request_problem'));
+$skip_connection_check = ($active_tab === 'prefs' && $this->CheckPermission('Modify Site Preferences'));
+$connection_ok = TRUE;
+if( !$skip_connection_check ) {
+    $connection_ok = modmgr_utils::is_connection_ok();
+    if( !$connection_ok ) echo $this->ShowErrors($this->Lang('error_request_problem'));
+}
+else {
+    // Avoid forcing a repository call when user is opening settings to fix URL.
+    $connection_ok = FALSE;
+}
 
 // this is a bit ugly.
 modmgr_utils::get_images();
@@ -98,6 +142,7 @@ if( $this->CheckPermission('Modify Modules') ) {
 if( $this->CheckPermission('Modify Site Preferences') ) echo $this->SetTabHeader('prefs',$this->Lang('prompt_settings'));
 echo $this->EndTabHeaders();
 
+$prefs_html = '';
 echo $this->StartTabContent();
 if( $this->CheckPermission('Modify Modules') ) {
     echo $this->StartTab('installed',$params);
@@ -120,7 +165,55 @@ if( $this->CheckPermission('Modify Modules') ) {
 }
 if( $this->CheckPermission('Modify Site Preferences') ) {
     echo $this->StartTab('prefs',$params);
+    ob_start();
     include(dirname(__FILE__).'/function.admin_prefs_tab.php');
+    $prefs_html = ob_get_clean();
+    echo $prefs_html;
     echo $this->EndTab();
 }
 echo $this->EndTabContent();
+
+if( $prefs_html !== '' ) {
+    $prefs_html_js = json_encode($prefs_html);
+    echo '<script>(function(){';
+    echo 'var prefsHtml = '.$prefs_html_js.';';
+    echo 'var fallbackMarker = "<!-- MM_PREFS_FALLBACK_INJECTED -->";';
+    echo 'var forcePrefsRender = false;';
+    echo 'function isPrefsRequested(){';
+    echo '  try {';
+    echo '    var url = new URL(window.location.href);';
+    echo '    var a = url.searchParams.get("'.$id.'__activetab");';
+    echo '    var b = url.searchParams.get("__activetab");';
+    echo '    return a === "prefs" || b === "prefs";';
+    echo '  } catch(e) { return false; }';
+    echo '}';
+    echo 'function ensurePrefsVisible(){';
+    echo '  var prefsTab = document.getElementById("prefs");';
+    echo '  var installedTab = document.getElementById("installed");';
+    echo '  var pageContent = document.getElementById("page_content");';
+    echo '  if(!prefsTab || !pageContent) return;';
+    echo '  var prefsActive = (prefsTab.className || "").indexOf("active") !== -1;';
+    echo '  var installedActive = installedTab && (installedTab.className || "").indexOf("active") !== -1;';
+    echo '  var shouldInject = isPrefsRequested() || forcePrefsRender || prefsActive;';
+    echo '  if(!shouldInject) return;';
+    echo '  if(installedActive) return;';
+    echo '  var hasPrefsField = !!pageContent.querySelector("#mr_url");';
+    echo '  var alreadyInjected = (pageContent.innerHTML || "").indexOf("MM_PREFS_FALLBACK_INJECTED") !== -1;';
+    echo '  if(hasPrefsField && !alreadyInjected) return;';
+    echo '  pageContent.style.height = "auto";';
+    echo '  pageContent.style.minHeight = "260px";';
+    echo '  pageContent.style.overflow = "visible";';
+    echo '  pageContent.innerHTML = prefsHtml + fallbackMarker;';
+    echo '}';
+    echo 'var prefsTab = document.getElementById("prefs");';
+    echo 'var installedTab = document.getElementById("installed");';
+    echo 'if(prefsTab){';
+    echo '  prefsTab.addEventListener("click",function(){ forcePrefsRender = true; setTimeout(ensurePrefsVisible,0); setTimeout(ensurePrefsVisible,100); setTimeout(ensurePrefsVisible,220); });';
+    echo '}';
+    echo 'if(installedTab){';
+    echo '  installedTab.addEventListener("click",function(){ forcePrefsRender = false; });';
+    echo '}';
+    echo 'if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded",ensurePrefsVisible); } else { ensurePrefsVisible(); }';
+    echo 'setTimeout(ensurePrefsVisible,80);';
+    echo '})();</script>';
+}

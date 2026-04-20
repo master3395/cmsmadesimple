@@ -45,6 +45,13 @@ $(document).ready(function(){
     </p>
   </div>
 
+  <div class="pageoverflow">
+    <p class="pagetext"><label for="show_beta">{$ModuleManager->Lang('show_beta')}:</label>&nbsp;{cms_help key2='help_show_beta' title=$ModuleManager->Lang('show_beta')}</p>
+    <p class="pageinput">
+      <select id="show_beta" name="{$actionid}show_beta">{cms_yesno selected=$show_beta}</select>
+    </p>
+  </div>
+
 {if isset($developer_mode)}
   <div class="pageoverflow">
     <p class="pagetext"><label for="allowuninstall">{$ModuleManager->Lang('allowuninstall')}:</label>&nbsp;{cms_help key2='help_allowuninstall' title=$ModuleManager->Lang('allowuninstall')}</p>
@@ -66,6 +73,7 @@ $(document).ready(function(){
   <div class="pageoverflow">
     <p class="pagetext"></p>
     <p class="pageinput">
+      <input type="submit" id="settings_checkrepo" name="{$actionid}checkrepo" value="Check URL"/>
       <input type="submit" id="settings_submit" name="{$actionid}submit" value="{$ModuleManager->Lang('submit')}"/>
     </p>
   </div>

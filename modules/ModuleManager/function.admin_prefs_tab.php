@@ -39,12 +39,13 @@ if( !$this->CheckPermission('Modify Site Preferences') ) exit;
 
 if( isset($config['developer_mode']) ) {
   $smarty->assign('developer_mode',1);
-  $smarty->assign('module_repository',$this->GetPreference('module_repository'));
   $smarty->assign('disable_caching',$this->GetPreference('disable_caching',0));
 }
+$smarty->assign('module_repository',$this->GetPreference('module_repository'));
 $smarty->assign('dl_chunksize',$this->GetPreference('dl_chunksize',256));
 $smarty->assign('latestdepends',$this->GetPreference('latestdepends',1));
 $smarty->assign('allowuninstall',$this->GetPreference('allowuninstall',0));
+$smarty->assign('show_beta',$this->GetPreference('show_beta',0));
 
 echo $this->ProcessTemplate('adminprefs.tpl');
 

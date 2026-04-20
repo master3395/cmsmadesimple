@@ -37,6 +37,29 @@
 
 final class modmgr_utils
 {
+    public static function normalize_repo_url($url)
+    {
+        $url = trim((string)$url);
+        if( $url === '' ) return '';
+        return rtrim($url,'/');
+    }
+
+    public static function get_repository_candidates($preferred = '')
+    {
+        $candidates = array();
+        $preferred = self::normalize_repo_url($preferred);
+        if( $preferred !== '' ) $candidates[] = $preferred;
+
+        $defaults = array(
+            'https://api.cmsmadesimple.org/ModuleRepository/request/v2',
+            'https://www.cmsmadesimple.org/ModuleRepository/request/v2'
+        );
+        foreach( $defaults as $u ) {
+            if( !in_array($u,$candidates,TRUE) ) $candidates[] = $u;
+        }
+        return $candidates;
+    }
+
     protected function __construct() {}
 
     public static function get_installed_modules($include_inactive = FALSE, $as_hash = FALSE)
@@ -99,10 +122,19 @@ final class modmgr_utils
     {
         if( !is_array($xmldetails) ) return;
 
+        // Filter out beta/pre-release modules unless preference is enabled.
+        $mod = cms_utils::get_module('ModuleManager');
+        if( !$mod->GetPreference('show_beta',0) ) {
+            $xmldetails = array_filter($xmldetails, function($det) {
+                $ver = isset($det['version']) ? strtolower($det['version']) : '';
+                $fn = isset($det['filename']) ? strtolower($det['filename']) : '';
+                return !preg_match('/(alpha|beta|rc|dev)/', $ver.$fn);
+            });
+            $xmldetails = array_values($xmldetails);
+        }
+
         // sort
         uasort( $xmldetails, array('modmgr_utils','uasort_cmp_details') );
-
-        $mod = cms_utils::get_module('ModuleManager');
 
         //
         // Process the xmldetails, and only keep the latest version
@@ -196,11 +228,12 @@ final class modmgr_utils
         if( $ok != -1 ) return $ok;
 
         $mod = cms_utils::get_module('ModuleManager');
-        $url = $mod->GetPreference('module_repository');
-        if( $url ) {
-            $url .= '/version';
-            $req = new modmgr_cached_request($url);
-            $req->setTimeout(3);
+        $preferred = $mod->GetPreference('module_repository');
+        $candidates = self::get_repository_candidates($preferred);
+        foreach( $candidates as $base ) {
+            $url = $base.'/version';
+            $req = new modmgr_cached_request();
+            $req->setTimeout(10);
             $req->execute($url);
             if( ($status = $req->getStatus()) == 200 ) {
                 $tmp = $req->getResult();
@@ -212,13 +245,17 @@ final class modmgr_utils
 
                 $data = json_decode($req->getResult(),true);
                 if( version_compare($data,MINIMUM_REPOSITORY_VERSION) >= 0 ) {
+                    // Persist the first working repository so subsequent requests
+                    // use a known-good endpoint.
+                    if( self::normalize_repo_url($preferred) !== $base ) {
+                        $mod->SetPreference('module_repository',$base.'/');
+                    }
                     $ok = TRUE;
                     return TRUE;
                 }
             }
             else {
                 $req->clearCache();
-                audit($status,'ModuleManager','Cannot connect to ModuleRepository');
             }
         }
         $ok = FALSE;
@@ -230,36 +267,10 @@ final class modmgr_utils
         $ts = strtotime($date);
         $stale_ts = strtotime('-2 years');
         $warn_ts = strtotime('-18 months');
-        $new_ts = strtotime('-1 month');
+        $new_ts = strtotime('-3 months');
         if( $ts <= $stale_ts ) return 'stale';
         if( $ts <= $warn_ts ) return 'warn';
         if( $ts >= $new_ts ) return 'new';
-    }
-
-    public static function track_module_event($module_name, $event_type, $module_version)
-    {
-        try {
-            global $CMS_VERSION;
-            $url = 'https://api.cmsmadesimple.org/v1/modules/' . urlencode($module_name) . '/events';
-            $data = json_encode([
-                'eventType' => $event_type,
-                'cmsVersion' => $CMS_VERSION,
-                'moduleVersion' => $module_version
-            ]);
-
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-            curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 60);
-            curl_exec($ch);
-            curl_close($ch);
-        } catch (Exception $e) {
-            // Silently fail - don't interrupt module operations
-        }
     }
 
     public static function get_images()
